@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>bintang Harapan untuk kamu ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #0a0a1a 0%, #1a1a3a 50%, #2a2a4a 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            touch-action: manipulation;
+        }
+
+        /* Background Stars */
+        .bg-stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* Moon */
+        .moon {
+            position: fixed;
+            top: 40px;
+            right: 30px;
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle at 35% 35%, #fffde7, #f0e68c);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 250, 205, 0.6), 0 0 120px rgba(255, 250, 205, 0.3);
+            z-index: 1;
+            animation: moonGlow 5s ease-in-out infinite;
+        }
+
+        .moon::before {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 30%;
+            width: 15px;
+            height: 15px;
+            background: rgba(200, 190, 140, 0.4);
+            border-radius: 50%;
+        }
+
+        .moon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 55%;
+            width: 20px;
+            height: 20px;
+            background: rgba(200, 190, 140, 0.3);
+            border-radius: 50%;
+        }
+
+        @keyframes moonGlow {
+            0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 60px rgba(255, 250, 205, 0.6); }
+            50% { transform: scale(1.05) rotate(2deg); box-shadow: 0 0 80px rgba(255, 250, 205, 0.8); }
+        }
+
+        /* Game Container */
+        .game-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.6), 0 0 80px rgba(255, 200, 200, 0.3);
+            margin-bottom: 15px;
+            animation: titleFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .game-subtitle {
+            font-size: clamp(0.85rem, 3vw, 1.1rem);
+            color: #b8b8c8;
+            margin-bottom: 50px;
+            max-width: 320px;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 200% 200%;
+            border: none;
+            padding: 18px 55px;
+            border-radius: 50px;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5), 0 0 20px rgba(240, 147, 251, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: gradientMove 3s ease infinite, pulse 2.5s infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5); }
+            50% { transform: scale(1.03); box-shadow: 0 20px 50px rgba(102, 126, 234, 0.7); }
+        }
+
+        .start-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Game Area */
+        .game-area {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        /* Falling Star */
+        .star {
+            position: absolute;
+            font-size: 45px;
+            cursor: pointer;
+            animation: fall linear forwards;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+            z-index: 10;
+        }
+
+        .star:hover, .star:active {
+            transform: scale(1.4);
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 1));
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 0;
+                transform: translateY(-60px) rotate(0deg) scale(0.5);
+            }
+            15% {
+                opacity: 1;
+                transform: translateY(10vh) rotate(20deg) scale(1);
+            }
+            85% {
+                opacity: 1;
+                transform: translateY(80vh) rotate(-10deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(95vh) rotate(-30deg) scale(0.8);
+            }
+        }
+
+        /* Message Popup */
+        .message-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 35px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(102, 126, 234, 0.2);
+            z-index: 1000;
+            text-align: center;
+            max-width: 90%;
+            width: 380px;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .message-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .message-popup .star-icon {
+            font-size: 55px;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease infinite alternate;
+            display: inline-block;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-12px) scale(1.1); }
+        }
+
+        .message-popup p {
+            color: #fff;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .message-popup .close-btn {
+            margin-top: 25px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 35px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .message-popup .close-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+            transform: scale(1.05);
+        }
+
+        /* Score */
+        .score-display {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(15px);
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 0.95rem;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            z-index: 50;
+            display: none;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(240, 147, 251, 0.5);
+        }
+
+        /* Ending Screen */
+        .ending-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #0a0a1a, #1a1a3a 40%, #2a2a4a 100%);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .ending-screen .celebration-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .ending-screen .celebration-star {
+            position: absolute;
+            font-size: 30px;
+            animation: celebrate 3s ease-in-out forwards;
+        }
+
+        @keyframes celebrate {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            20% { opacity: 1; transform: translateY(80vh) scale(1.2); }
+            80% { opacity: 1; transform: translateY(30vh) scale(1); }
+            100% { opacity: 0; transform: translateY(10vh) scale(0.5); }
+        }
+
+        .ending-screen h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 7vw, 2.8rem);
+            color: #fff;
+            margin-bottom: 25px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            animation: titleFloat 2s ease-in-out infinite;
+        }
+
+        .ending-message {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(15px);
+            padding: 35px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 420px;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .ending-message p {
+            color: #e8e8f0;
+            font-size: 1rem;
+            line-height: 1.9;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .ending-message p:last-child {
+            margin-bottom: 0;
+        }
+
+        .ending-message .heart {
+            font-size: 1.5rem;
+            animation: heartbeat 1s ease infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.15); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.1); }
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #fa709a 100%);
+            background-size: 200% 200%;
+            border: none;
+            padding: 16px 45px;
+            border-radius: 50px;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 12px 35px rgba(245, 87, 108, 0.4);
+            transition: all 0.3s ease;
+            animation: gradientMove 3s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Particle Effects */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            animation: particleFade 0.8s ease forwards;
+            font-size: 20px;
+            z-index: 20;
+        }
+
+        @keyframes particleFade {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(0.3) translateY(-60px); }
+        }
+
+        /* Shooting Star */
+        .shooting-star {
+            position: absolute;
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #fff, #fff, transparent);
+            border-radius: 50%;
+            animation: shoot 1.2s ease-out forwards;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        @keyframes shoot {
+    0% {
+        opacity: 0;
+        transform: translateX(0) translateY(0) rotate(-45deg);
+    }
+    10% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-400px) translateY(400px) rotate(-45deg);
+    }
+}
+
+/* Cloud decoration */
+.cloud {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+    z-index: 1;
+    animation: cloudFloat 20s linear infinite;
+}
+
+.cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+}
+
+.cloud-1 {
+    width: 120px;
+    height: 40px;
+    top: 15%;
+    left: -150px;
+    animation-delay: 0s;
+}
+
+.cloud-1::after {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+    left: 20px;
+}
+
+.cloud-2 {
+    width: 100px;
+    height: 35px;
+    top: 25%;
+    left: -150px;
+    animation-delay: 8s;
+    animation-duration: 25s;
+}
+
+.cloud-2::after {
+    width: 40px;
+    height: 40px;
+    top: -20px;
+    left: 15px;
+}
+
+@keyframes cloudFloat {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 200px)); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .moon {
+        width: 60px;
+        height: 60px;
+        top: 25px;
+        right: 20px;
+    }
+    
+    .moon::before {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .moon::after {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .message-popup {
+        padding: 28px 22px;
+        width: 85%;
+    }
+    
+    .message-popup .star-icon {
+        font-size: 45px;
+    }
+    
+    .message-popup p {
+        font-size: 0.95rem;
+    }
+    
+    .ending-message {
+        padding: 25px 20px;
+    }
+    
+    .score-display {
+        font-size: 0.85rem;
+        padding: 10px 22px;
+    }
+    
+    .progress-container {
+        width: 160px;
+        top: 68px;
+    }
+    
+    .star {
+        font-size: 38px;
+    }
+}
+
+@media (max-width: 360px) {
+    .game-title {
+        font-size: 1.7rem;
+    }
+    
+    .start-btn {
+        padding: 15px 40px;
+        font-size: 1rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Background Stars -->
+    <div class="bg-stars" id="bgStars"></div>
+    
+    <!-- Moon -->
+    <div class="moon"></div>
+    
+    <!-- Clouds -->
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+
+    <!-- Start Screen -->
+    <div class="game-container" id="startScreen">
+        <h1 class="game-title">bintang Harapan untuk kamu</h1>
+        <p class="game-subtitle">Tangkap bintang jatuh untuk menerima pesan semangat dari akuu 💫</p>
+        <button class="start-btn" onclick="startGame()">Mulai Main 🎮</button>
+    </div>
+
+    <!-- Game Area -->
+    <div class="game-area" id="gameArea"></div>
+
+    <!-- Score Display -->
+    <div class="score-display" id="scoreDisplay">
+        Bintang Ditangkap: <span id="score">0</span> / 10
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Message Popup -->
+    <div class="message-popup" id="messagePopup">
+        <div class="star-icon">⭐</div>
+        <p id="messageText">Pesan akan muncul di sini...</p>
+        <button class="close-btn" onclick="closeMessage()">Terima 💖</button>
+    </div>
+
+    <!-- Ending Screen -->
+    <div class="ending-screen" id="endingScreen">
+        <div class="celebration-stars" id="celebrationStars"></div>
+        <h2>🌟 Selamat! 🌟</h2>
+        <div class="ending-message">
+            <p>
+                Kamu sudah menangkap 10 bintang harapan. Setiap bintang yang kamu tangkap adalah bukti bahwa kamu kuat, kamu istimewa, dan kamu dicintai.
+            </p>
+            <br>
+            <p>
+                Meskipun ibu sedang sakit dan kamu lelah bekerja, ingatlah bahwa ada yang selalu mengagumimu dari jauh. Kamu Lentera yang tidak pernah padam.
+            </p>
+            <br>
+            <p>
+                Semangat, Sayangku. Aku bangga padamu. <span class="heart">❤️</span>
+            </p>
+        </div>
+        <button class="restart-btn" onclick="restartGame()">Main Lagi 🔄</button>
+    </div>
+
+    <script>
+        // Messages array - deep and meaningful
+        const messages = [
+            "Kamu luar biasa. Even when the world feels heavy, your heart remains gold. ✨",
+            "Ingat, lelahmu bukan kelemahan. Itu bukti kamu berjuang untuk orang yang kamu cintai. 💪",
+            "Ibumu pasti bangga memiliki anak sekuat dan setangguh kamu. 🤗",
+            "Di balik lelahmu, ada kekuatan yang bahkan kamu tidak sadari. 🌟",
+            "Kamu tidak sendirian. Aku selalu di sini, mengagumimu dari kejauhan. 💕",
+            "Bintang yang kamu tangkap adalah doa-doamu yang sedang dijawab. 🌙",
+            "Istirahatlah kalau perlu, tapi jangan pernah ragukan nilai dirimu. 💫",
+            "Semangatmu hari ini adalah hadiah terindah untuk ibumu. 💝",
+            "Kamu adalah alasan mengapa aku percaya pada kekuatan cinta. ❤️",
+            "Even in darkness, you shine the brightest. Jangan pernah padam. 🔥",
+            "Kerjamu tidak sia-sia. Allah melihat every effort yang kamu buat. 🤲",
+            "Aku bangga padamu. Bukan karena apa yang kamu capai, tapi siapa kamu sebenarnya. 🌺",
+            "Kalau hari ini berat, ingatlah bahwa besok membawa harapan baru. ☀️",
+            "Ibumu tersenyum di balik kesakitannya, melihatmu berjuang untuknya. 😊",
+            "Kamu kuat bukan karena tidak punya kelemahan, tapi karena tetap berdiri meski lelah. 💪",
+            "Setiap tetes keringatmu adalah investasi untuk masa depan yang lebih baik. 📈",
+            "Kamu sudah melakukan yang terbaik hari ini. Itu cukup. ✅",
+            "Di mata Allah, usaha kecilmu lebih berharga dari pada hasil besar orang lain. 🤍",
+            "Keep going. Kamu lebih dekat dari yang kamu kira. 🏃‍♂️",
+            "Ibumu sayang kamu. Selalu. Tanpa syarat. 💗"
+        ];
+
+        // Game state
+        let score = 0;
+        let gameActive = false;
+        let starInterval;
+        let shootingStarInterval;
+        let gameDuration;
+        let usedMessages = [];
+        
+        // DOM Elements
+        const bgStars = document.getElementById('bgStars');
+        const gameArea = document.getElementById('gameArea');
+        const startScreen = document.getElementById('startScreen');
+        const gameAreaEl = document.getElementById('gameArea');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const scoreEl = document.getElementById('score');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const messagePopup = document.getElementById('messagePopup');
+        const messageText = document.getElementById('messageText');
+        const endingScreen = document.getElementById('endingScreen');
+        const celebrationStars = document.getElementById('celebrationStars');
+
+        // Create background stars
+        function createBackgroundStars() {
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'bg-star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animationDuration = (2 + Math.random() * 2) + 's';
+                bgStars.appendChild(star);
+            }
+        }
+
+        // Get random message
+        function getRandomMessage() {
+            if (usedMessages.length >= messages.length) {
+                usedMessages = [];
+            }
+            
+            let availableMessages = messages.filter((_, index) => !usedMessages.includes(index));
+            let randomIndex = Math.floor(Math.random() * availableMessages.length);
+            let messageIndex = messages.indexOf(availableMessages[randomIndex]);
+            
+            usedMessages.push(messageIndex);
+            return messages[messageIndex];
+        }
+
+        // Create particle effect
+        function createParticles(x, y) {
+            const particles = ['✨', '⭐', '💫', '🌟'];
+            
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.innerHTML = particles[Math.floor(Math.random() * particles.length)];
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                const angle = (Math.PI * 2 / 6) * i;
+                const distance = 40 + Math.random() * 30;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particle.style.transform = `translate(${tx}px, ${ty}px)`;
+                gameArea.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        // Create shooting star
+        function createShootingStar() {
+            if (!gameActive) return;
+            
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.left = (Math.random() * 60 + 20) + '%';
+            shootingStar.style.top = (Math.random() * 30 + 10) + '%';
+            shootingStar.style.animation = 'shoot 1s ease-out forwards';
+            gameArea.appendChild(shootingStar);
+            
+            setTimeout(() => shootingStar.remove(), 1000);
+        }
+
+        // Spawn falling star
+        function spawnStar() {
+            if (!gameActive) return;
+            if (score >= 10) return;
+            
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.innerHTML = ['⭐', '🌟', '✨', '💫'][Math.floor(Math.random() * 4)];
+            star.style.left = Math.random() * 75 + 12 + '%';
+            star.style.top = '-60px';
+            star.style.fontSize = (35 + Math.random() * 20) + 'px';
+            
+            // Random fall duration between 4-7 seconds
+            const duration = 4 + Math.random() * 3;
+            star.style.animation = `fall ${duration}s linear forwards`;
+            
+            // Click/tap handler
+            star.addEventListener('click', (e) => catchStar(e, star));
+            star.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                catchStar(e, star);
+            });
+            
+            gameArea.appendChild(star);
+            
+            // Remove star after animation
+            setTimeout(() => {
+                if (star.parentNode) {
+                    star.remove();
+                }
+            }, duration * 1000);
+        }
+
+        // Catch star
+        function catchStar(e, star) {
+            if (!gameActive) return;
+            
+            // Get position
+            const rect = star.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            // Create particles
+            createParticles(x, y);
+            
+            // Remove star
+            star.remove();
+            
+            // Update score
+            score++;
+            scoreEl.textContent = score;
+            
+            // Update progress
+            const progress = (score / 10) * 100;
+            progressBar.style.width = progress + '%';
+            
+            // Show message
+            if (score <= 10) {
+                showMessage(getRandomMessage());
+            }
+            
+            // Check win
+            if (score >= 10) {
+                setTimeout(endGame, 1500);
+            }
+        }
+
+        // Show message popup
+        function showMessage(text) {
+            messageText.textContent = text;
+            messagePopup.classList.add('show');
+        }
+
+        // Close message
+        function closeMessage() {
+            messagePopup.classList.remove('show');
+        }
+
+        // Start game
+        function startGame() {
+            score = 0;
+            gameActive = true;
+            usedMessages = [];
+            scoreEl.textContent = score;
+            progressBar.style.width = '0%';
+            
+            startScreen.style.display = 'none';
+            gameAreaEl.style.display = 'block';
+            scoreDisplay.style.display = 'block';
+            progressContainer.style.display = 'block';
+            endingScreen.style.display = 'none';
+            
+            // Start spawning stars - faster initially
+            starInterval = setInterval(spawnStar, 1200);
+            
+            // Shooting stars
+            shootingStarInterval = setInterval(createShootingStar, 2500);
+            
+            // End game after 90 seconds if not completed
+            gameDuration = setTimeout(() => {
+                if (score < 10) {
+                    endGame();
+                }
+            }, 90000);
+        }
+
+        // End game
+        function endGame() {
+            gameActive = false;
+            clearInterval(starInterval);
+            clearInterval(shootingStarInterval);
+            clearTimeout(gameDuration);
+            
+            gameAreaEl.style.display = 'none';
+            scoreDisplay.style.display = 'none';
+            progressContainer.style.display = 'none';
+            
+            // Clear game area
+            gameArea.innerHTML = '';
+            
+            // Show ending screen
+            endingScreen.style.display = 'flex';
+            
+            // Create celebration stars
+            createCelebrationStars();
+        }
+
+        // Create celebration stars for ending
+        function createCelebrationStars() {
+            celebrationStars.innerHTML = '';
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'celebration-star';
+                    star.innerHTML = ['⭐', '🌟', '✨', '💫', '❤️', '💖'][Math.floor(Math.random() * 6)];
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.animationDelay = Math.random() * 0.5 + 's';
+                    celebrationStars.appendChild(star);
+                }, i * 100);
+            }
+        }
+
+        // Restart game
+        function restartGame() {
+            endingScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+        }
+
+        // Initialize
+        createBackgroundStars();
+    </script>
+</body>
+</html>
